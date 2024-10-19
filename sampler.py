@@ -25,7 +25,7 @@ class StratifiedRaysampler(torch.nn.Module):
         
         
         if torch.cuda.is_available():
-            device = torch.device("cuda:0")
+            device = torch.device("cuda")
         else:
             device = torch.device("cpu")
 

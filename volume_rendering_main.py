@@ -97,8 +97,8 @@ def render_images(
         camera = camera.to(device)
         xy_grid = get_pixels_from_image(image_size, camera) # TODO (Q1.3): implement in ray_utils.py
         ray_bundle = get_rays_from_pixels(xy_grid, image_size, camera) # TODO (Q1.3): implement in ray_utils.py
-
- # TODO (1.3): Visualize xy grid using vis_grid
+        
+        # TODO (1.3): Visualize xy grid using vis_grid
         if cam_idx == 0 and file_prefix == '':
             # pass
             xy_grid_img = vis_grid(xy_grid, image_size)
@@ -217,8 +217,8 @@ def train(
             out = model(ray_bundle)
 
             # TODO (Q2.2): Calculate loss
-            pred_colours = out['feature']
-            loss = mseloss(rgb_gt, pred_colours)
+            y_hat_rgb = out['feature']
+            loss = mseloss(rgb_gt, y_hat_rgb)
 
             # Backprop
             optimizer.zero_grad()
@@ -317,6 +317,7 @@ def train_nerf(
         collate_fn=trivial_collate,
     )
 
+    mseloss = torch.nn.MSELoss()
     # Run the main training loop.
     for epoch in range(start_epoch, cfg.training.num_epochs):
         t_range = tqdm.tqdm(enumerate(train_dataloader))
@@ -339,7 +340,8 @@ def train_nerf(
             out = model(ray_bundle)
 
             # TODO (Q3.1): Calculate loss
-            loss = None
+            y_hat_rgb = out['feature']
+            loss = mseloss(rgb_gt, y_hat_rgb)
 
             # Take the training step.
             optimizer.zero_grad()

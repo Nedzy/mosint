@@ -23,7 +23,7 @@ class VolumeRenderer(torch.nn.Module):
         eps: float = 1e-10
     ):
         if torch.cuda.is_available():
-            device = torch.device("cuda:0")
+            device = torch.device("cuda")
         else:
             device = torch.device("cpu")
 
@@ -49,13 +49,13 @@ class VolumeRenderer(torch.nn.Module):
         weights: torch.Tensor,
         rays_feature: torch.Tensor
     ):
-        # print("weights shape:", weights.shape)
-        
+        # TODO (1.5): Aggregate (weighted sum of) features using weights
         # print("rays_feature shape:", rays_feature.shape)
-        try:
-            weighted_features = (weights * rays_feature)
-        except:
-            weighted_features = (weights.squeeze(2) * rays_feature)
+        
+        ndirs = rays_feature.shape[0]
+        npts = rays_feature.shape[1]
+
+        weighted_features = (weights * rays_feature.view(ndirs, npts, -1))
             
         
         feature = torch.sum(weighted_features, axis=1)
@@ -104,7 +104,7 @@ class VolumeRenderer(torch.nn.Module):
             # TODO (1.5): Render (color) features using weights
             # pass
             # feature = self._aggregate(weights, feature)
-            feature = self._aggregate(weights, feature.reshape(-1,64,3))
+            feature = self._aggregate(weights, feature.reshape(-1, n_pts, 3))
 
             # TODO (1.5): Render depth map
             # pass

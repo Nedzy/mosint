@@ -89,7 +89,7 @@ def get_pixels_from_image(image_size, camera):
     W, H = image_size[0], image_size[1]
 
     if torch.cuda.is_available():
-        device = torch.device("cuda:0")
+        device = torch.device("cuda")
     else:
         device = torch.device("cpu")
 
